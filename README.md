@@ -39,3 +39,11 @@ Locally preview production build:
 ```bash
 yarn preview
 ```
+
+## Tests
+
+This project includes unit tests, to run them use:
+
+```bash
+yarn test
+```
