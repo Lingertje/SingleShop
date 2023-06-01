@@ -11,7 +11,12 @@ import { Product } from '~/types/Product';
 	const emit = defineEmits(['sort', 'filter']);
 	const sort = ref('sort-order');
 	const filters = ref({
-		manufacturer: ''
+		manufacturer: '',
+		color: '',
+		'5g': null,
+		operatingSystem: '',
+		esim: null,
+		refurbished: null
 	});
 
 	const collectManufacturers = computed(() => {
@@ -25,11 +30,33 @@ import { Product } from '~/types/Product';
 	});
 
 	const filterProducts = computed(() => {
-		if (filters.value.manufacturer === '') {
-			return emit('filter', sortProducts(props.products));
+		let filteredArray = [...props.products];
+
+		if (filters.value.manufacturer !== '') {
+			filteredArray = filteredArray.filter(product => product.manufacturer === filters.value.manufacturer);
 		}
 
-		return emit('filter', sortProducts(props.products.filter(product => product.manufacturer === filters.value.manufacturer)));
+		if (filters.value.color !== '') {
+			filteredArray = filteredArray.filter(product => product.colors.includes(filters.value.color));
+		}
+
+		if (filters.value['5g'] !== null) {
+			filteredArray = filteredArray.filter(product => product.has_5g === filters.value['5g']);
+		}
+
+		if (filters.value.operatingSystem !== '') {
+			filteredArray = filteredArray.filter(product => product.operating_system === filters.value.operatingSystem);
+		}
+
+		if (filters.value.esim !== null) {
+			filteredArray = filteredArray.filter(product => product.has_esim === filters.value.esim);
+		}
+
+		if (filters.value.refurbished !== null) {
+			filteredArray = filteredArray.filter(product => product.refurbished === filters.value.refurbished);
+		}
+
+		return emit('filter', sortProducts(filteredArray));
 	})
 
 	function sortProducts(products: Product[]) {
@@ -45,17 +72,34 @@ import { Product } from '~/types/Product';
 	<form :class="$style['filter-and-sort']">
 		<div :class="$style['filters']">
 			<label>
-				Merk:
 				<select v-model="filters.manufacturer" @change="filterProducts!">
 					<option value="">Kies een merk</option>
 					<option v-for="manufacturer in collectManufacturers" :value="manufacturer">{{ manufacturer }}</option>
 				</select>
 			</label>
 			<span>Kleur</span>
-			<span>5G</span>
+			<label>
+				<select v-model="filters['5g']" @change="filterProducts!">
+					<option :value="null">5G</option>
+					<option :value="true">Ja</option>
+					<option :value="false">Nee</option>
+				</select>
+			</label>
 			<span>Besturingsysteem</span>
-			<span>E-sim</span>
-			<span>Refurbished</span>
+			<label>
+				<select v-model="filters.esim" @change="filterProducts!">
+					<option :value="null">E-Sim</option>
+					<option :value="true">Ja</option>
+					<option :value="false">Nee</option>
+				</select>
+			</label>
+			<label>
+				<select v-model="filters.refurbished" @change="filterProducts!">
+					<option :value="null">Refurbished</option>
+					<option :value="true">Ja</option>
+					<option :value="false">Nee</option>
+				</select>
+			</label>
 		</div>
 		<div>
 			<label>
@@ -72,7 +116,7 @@ import { Product } from '~/types/Product';
 <style module lang="scss">
 	.filter-and-sort {
 		display: grid;
-		grid-template-columns: 3fr 1fr;
+		grid-template-columns: 1fr;
 		align-items: end;
 		margin: 1rem 0;
 		padding: 1.5rem 1rem;
@@ -82,15 +126,24 @@ import { Product } from '~/types/Product';
 
 		.filters {
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			gap: 1rem;
 		}
 
 		select {
 			font-weight: 700;
-			padding: 0 2rem 0 0.5rem;
+			padding: 0 1.5rem 0 0.5rem;
 			border: 0;
 			outline: none;
+		}
+	}
+
+	@media screen and (min-width: 1200px) {
+		.filter-and-sort {
+			grid-template-columns: 3fr 1fr;
+			.filters {
+				flex-direction: row;
+			}
 		}
 	}
 </style>
