@@ -20,20 +20,27 @@ import { Product } from '~/types/Product';
 	});
 
 	const collectManufacturers = computed(() => {
-		const manufacturers = new Set<String>();
+		const manufacturers = new Set<String>(props.products.map(product => product.manufacturer));
 
-		props.products.forEach(product => {
-			manufacturers.add(product.manufacturer);
-		});
-
-		return Array.from(manufacturers);
+		return [...manufacturers].sort();
 	});
 
-	const filterProducts = computed(() => {
-		let filteredArray = [...props.products];
+	const collectColors = computed(() => {
+		const colors = new Set<String>();
+
+		props.products.forEach(product => {
+			product.colors.forEach(color => {
+				colors.add(color);
+			})
+		})
+
+		return [...colors].sort();
+	});
+
+	function filterProducts() {
 		const filterKeys = Object.keys(filters.value);
 
-		filteredArray = filteredArray.filter(product => {
+		const filteredArray = props.products.filter(product => {
 			return filterKeys.every(key => {
 				// @ts-ignore
 				if (filters.value[key] === '' || filters.value[key] === null || key === 'sort') {
@@ -50,7 +57,7 @@ import { Product } from '~/types/Product';
 		})
 
 		return emit('filter', sortProducts(filteredArray));
-	})
+	}
 
 	function sortProducts(products: Product[]) {
 		if (filters.value.sort === 'manufacturer') {
@@ -59,41 +66,60 @@ import { Product } from '~/types/Product';
 
 		return products.sort((a, b) => a.sort_order > b.sort_order ? 1 : -1);
 	}
+
+	function resetFilters() {
+		filters.value = {
+			manufacturer: '',
+			color: '',
+			has_5g: null,
+			operating_system: '',
+			has_esim: null,
+			refurbished: null,
+			sort: 'sort-order'
+		}
+
+		filterProducts();
+	}
 </script>
 
 <template>
 	<form :class="$style['filter-and-sort']">
 		<div :class="$style['filters']">
 			<label>
-				<select v-model="filters.manufacturer" @change="filterProducts!">
+				<select v-model="filters.manufacturer" @change="filterProducts">
 					<option value="">Kies een merk</option>
 					<option v-for="manufacturer in collectManufacturers" :value="manufacturer">{{ manufacturer }}</option>
 				</select>
 			</label>
-			<span>Kleur</span>
 			<label>
-				<select v-model="filters.has_5g" @change="filterProducts!">
+				<select v-model="filters.color" @change="filterProducts">
+					<option value="">Kies een kleur</option>
+					<option v-for="color in collectColors" :value="color">{{ color }}</option>
+				</select>
+			</label>
+			<label>
+				<select v-model="filters.has_5g" @change="filterProducts">
 					<option :value="null">5G</option>
 					<option :value="true">Ja</option>
 					<option :value="false">Nee</option>
 				</select>
 			</label>
 			<label>
-				<select v-model="filters.operating_system" @change="filterProducts!">
-					<option value="">Besturingssysteem</option>
+				<select v-model="filters.operating_system" @change="filterProducts">
+					<option value="">OS</option>
 					<option value="IOS">iOS</option>
 					<option value="ANDROID">Android</option>
 				</select>
 			</label>
 			<label>
-				<select v-model="filters.has_esim" @change="filterProducts!">
+				<select v-model="filters.has_esim" @change="filterProducts">
 					<option :value="null">E-Sim</option>
 					<option :value="true">Ja</option>
 					<option :value="false">Nee</option>
 				</select>
 			</label>
 			<label>
-				<select v-model="filters.refurbished" @change="filterProducts!">
+				<select v-model="filters.refurbished" @change="filterProducts">
 					<option :value="null">Refurbished</option>
 					<option :value="true">Ja</option>
 					<option :value="false">Nee</option>
@@ -103,12 +129,13 @@ import { Product } from '~/types/Product';
 		<div>
 			<label>
 				Sorteer op:
-				<select v-model="filters.sort" @change="filterProducts!">
+				<select v-model="filters.sort" @change="filterProducts">
 					<option value="sort-order">Meest verkocht</option>
 					<option value="manufacturer">Merk</option>
 				</select>
 			</label>
 		</div>
+		<button :class="$style['reset-button']" @click="resetFilters">Reset filters</button>
 	</form>
 </template>
 
@@ -127,6 +154,11 @@ import { Product } from '~/types/Product';
 			display: flex;
 			flex-direction: column;
 			gap: 1rem;
+		}
+
+		.reset-button {
+			background-color: transparent;
+			border: 0;
 		}
 
 		select {
