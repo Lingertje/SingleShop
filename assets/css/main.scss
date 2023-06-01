@@ -1,0 +1,84 @@
+@import "normalize.css/normalize.css";
+
+:root {
+	--color-kux-active: #090;
+    --color-kux-attention-box-background: rgba(0, 119, 204, 0.15);
+    --color-kux-attention-box-green-background: rgba(0, 153, 0, 0.15);
+    --color-kux-attention-menu-background: #fff;
+    --color-kux-background: #fff;
+    --color-kux-background-secondary: #f3f3f3;
+    --color-kux-background-secondary-alpha: rgba(243, 243, 243, 0.9);
+    --color-kux-breadcrumb-color: #939393;
+    --color-kux-text: #232323;
+    --color-kux-text-secondary: #fff;
+    --color-kux-text-tertiary: #939393;
+    --color-kux-link-color: #07c;
+    --color-kux-hover-color: #07c;
+    --color-kux-hover-with-alpha: rgba(0, 119, 204, 0.15);
+    --color-kux-border-top-color: #e3e3e3;
+    --color-kux-border-right-color: #e3e3e3;
+    --color-kux-border-bottom-color: #e3e3e3;
+    --color-kux-border-left-color: #e3e3e3;
+    --color-kux-button-secondary-icon-only: #07c;
+    --color-kux-button-alternate-secondary-icon-only: #000;
+    --color-kux-disabled-primary: #737373;
+    --color-kux-disabled-secondary: #939393;
+    --color-kux-heading-primary: #090;
+    --color-kux-card-background: #fff;
+    --color-kux-card-hover-color: #f3f3f3;
+    --color-kux-card-icon-secondary: #090;
+    --color-kux-card-icon-tertiary: #fff;
+    --color-kux-card-text-secondary: #939393;
+    --color-kux-card-border-color: #d3d3d3;
+    --color-kux-divider-color: #d3d3d3;
+    --color-kux-close-icon: #939393;
+    --color-kux-caution: #e70;
+    --color-kux-caution-with-alpha: rgba(238, 119, 0, 0.15);
+    --color-kux-error: #e52e2e;
+    --color-kux-error-with-alpha: rgba(229, 46, 46, 0.15);
+    --color-kux-info: #07c;
+    --color-kux-info-with-alpha: rgba(0, 119, 204, 0.15);
+    --color-kux-modal-active-background: rgba(51, 51, 51, 0.4);
+    --color-kux-succes: #090;
+    --color-kux-succes-with-alpha: rgba(0, 153, 0, 0.15);
+    --color-kux-skeleton-animation-primary: #e3e3e3;
+    --color-kux-skeleton-animation-secondary: #f3f3f3;
+    --color-kux-form-control-border: #939393;
+    --color-kux-form-control-disabled: #f3f3f3;
+    --color-kux-form-control-disabled-text: #232323;
+    --color-kux-form-placeholder-text: #939393;
+    --color-kux-form-input-disabled: #b3b3b3;
+    --color-kux-modal-background-overlay: rgba(51, 51, 51, 0.4);
+    --color-kux-pagination-dot-inactive: #e3e3e3;
+    --color-kux-tabs-alternate-color: #fff;
+    --color-kux-tabs-alternate-alpha: rgba(255, 255, 255, 0.5);
+    --color-kux-tooltip-border: #939393;
+    --color-kux-tooltip-before: #07c;
+    --color-kux-table-hover-color: #f3f3f3;
+    --color-kux-table-sort-icon: #939393;
+    --color-kux-table-sort-icon-sorted: #333;
+}
+
+body {
+    color: var(--color-kux-text);
+	font-size: 16px;
+	line-height: 1.5;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen-Sans","Ubuntu","Cantarell","Helvetica Neue",sans-serif;
+	background-color: var(--color-kux-background-secondary);
+}
+
+h1, .h1 {
+	color: var(--color-kux-heading-primary);
+	font-size: 2.5rem;
+}
+
+.container {
+	width: min(100%, 1200px);
+	margin: 0 auto;
+}
+
+.reset-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
