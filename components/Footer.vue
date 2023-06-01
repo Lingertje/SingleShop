@@ -12,6 +12,7 @@
 	footer {
 		margin-top: 2rem;
 		padding: 1rem 0;
+		border-top: 1px solid var(--color-kux-border);
 		background-color: var(--color-kux-background);
 
 		p {

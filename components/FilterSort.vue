@@ -9,14 +9,14 @@ import { Product } from '~/types/Product';
 	})
 
 	const emit = defineEmits(['sort', 'filter']);
-	const sort = ref('sort-order');
 	const filters = ref({
 		manufacturer: '',
 		color: '',
-		'5g': null,
-		operatingSystem: '',
-		esim: null,
-		refurbished: null
+		has_5g: null,
+		operating_system: '',
+		has_esim: null,
+		refurbished: null,
+		sort: 'sort-order'
 	});
 
 	const collectManufacturers = computed(() => {
@@ -31,36 +31,29 @@ import { Product } from '~/types/Product';
 
 	const filterProducts = computed(() => {
 		let filteredArray = [...props.products];
+		const filterKeys = Object.keys(filters.value);
 
-		if (filters.value.manufacturer !== '') {
-			filteredArray = filteredArray.filter(product => product.manufacturer === filters.value.manufacturer);
-		}
+		filteredArray = filteredArray.filter(product => {
+			return filterKeys.every(key => {
+				// @ts-ignore
+				if (filters.value[key] === '' || filters.value[key] === null || key === 'sort') {
+					return true;
+				}
 
-		if (filters.value.color !== '') {
-			filteredArray = filteredArray.filter(product => product.colors.includes(filters.value.color));
-		}
+				if (key === 'color') {
+					return product.colors.includes(filters.value.color);
+				}
 
-		if (filters.value['5g'] !== null) {
-			filteredArray = filteredArray.filter(product => product.has_5g === filters.value['5g']);
-		}
-
-		if (filters.value.operatingSystem !== '') {
-			filteredArray = filteredArray.filter(product => product.operating_system === filters.value.operatingSystem);
-		}
-
-		if (filters.value.esim !== null) {
-			filteredArray = filteredArray.filter(product => product.has_esim === filters.value.esim);
-		}
-
-		if (filters.value.refurbished !== null) {
-			filteredArray = filteredArray.filter(product => product.refurbished === filters.value.refurbished);
-		}
+				// @ts-ignore
+				return product[key] === filters.value[key];
+			})
+		})
 
 		return emit('filter', sortProducts(filteredArray));
 	})
 
 	function sortProducts(products: Product[]) {
-		if (sort.value === 'manufacturer') {
+		if (filters.value.sort === 'manufacturer') {
 			return products.sort((a, b) => a.manufacturer > b.manufacturer ? 1 : -1);
 		}
 
@@ -79,15 +72,21 @@ import { Product } from '~/types/Product';
 			</label>
 			<span>Kleur</span>
 			<label>
-				<select v-model="filters['5g']" @change="filterProducts!">
+				<select v-model="filters.has_5g" @change="filterProducts!">
 					<option :value="null">5G</option>
 					<option :value="true">Ja</option>
 					<option :value="false">Nee</option>
 				</select>
 			</label>
-			<span>Besturingsysteem</span>
 			<label>
-				<select v-model="filters.esim" @change="filterProducts!">
+				<select v-model="filters.operating_system" @change="filterProducts!">
+					<option value="">Besturingssysteem</option>
+					<option value="IOS">iOS</option>
+					<option value="ANDROID">Android</option>
+				</select>
+			</label>
+			<label>
+				<select v-model="filters.has_esim" @change="filterProducts!">
 					<option :value="null">E-Sim</option>
 					<option :value="true">Ja</option>
 					<option :value="false">Nee</option>
@@ -104,7 +103,7 @@ import { Product } from '~/types/Product';
 		<div>
 			<label>
 				Sorteer op:
-				<select v-model="sort" @change="filterProducts!">
+				<select v-model="filters.sort" @change="filterProducts!">
 					<option value="sort-order">Meest verkocht</option>
 					<option value="manufacturer">Merk</option>
 				</select>
@@ -131,6 +130,7 @@ import { Product } from '~/types/Product';
 		}
 
 		select {
+			width: 100%;
 			font-weight: 700;
 			padding: 0 1.5rem 0 0.5rem;
 			border: 0;
@@ -143,6 +143,10 @@ import { Product } from '~/types/Product';
 			grid-template-columns: 3fr 1fr;
 			.filters {
 				flex-direction: row;
+			}
+
+			select {
+				width: auto;
 			}
 		}
 	}

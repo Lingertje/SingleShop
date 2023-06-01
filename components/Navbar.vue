@@ -12,7 +12,7 @@
 		top: 0;
 		padding: 1rem 0;
 		background-color: var(--color-kux-background);
-		box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+		border-bottom: 1px solid var(--color-kux-border);
 		z-index: 1;
 	}
 	.logo {

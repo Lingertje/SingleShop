@@ -2,18 +2,18 @@
 	import { ref, computed } from 'vue';
 	import { Product } from '@/types/Product';
 
+	type ReturnType = {
+		products: Product[];
+	}
+
 	const productList = ref<Product[]>([]);
 	const sortedProducts = ref<Product[]>([]);
 
-	fetch('http://localhost:3000/products.json')
-		.then(res => res.json())
-		.then(data => {
-			console.log(data.products);
-			productList.value = data.products;
-			sortedProducts.value = data.products;
-		});
+	const { data } = await useFetch<ReturnType>('http://localhost:3000/products.json');
+	productList.value = data.value?.products || [];
+	sortedProducts.value = data.value?.products || [];
 
-	const numberOfProducts = computed(() => sortedProducts.value.length);
+	const numberOfProducts = computed(() => data.value?.products.length);
 
 	function updateSorted(products: Product[]) {
 		sortedProducts.value = products;
