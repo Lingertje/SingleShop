@@ -18,6 +18,7 @@ import { Product } from '~/types/Product';
 		refurbished: null,
 		sort: 'sort-order'
 	});
+	const filtersOpen = ref(false);
 
 	const collectManufacturers = computed(() => {
 		const manufacturers = new Set<String>(props.products.map(product => product.manufacturer));
@@ -56,6 +57,7 @@ import { Product } from '~/types/Product';
 			})
 		})
 
+		filtersOpen.value = true;
 		return emit('filter', sortProducts(filteredArray));
 	}
 
@@ -79,76 +81,82 @@ import { Product } from '~/types/Product';
 		}
 
 		filterProducts();
+		filtersOpen.value = false;
 	}
 </script>
 
 <template>
 	<form :class="$style['filter-and-sort']">
-		<div :class="$style['filters']">
-			<label>
-				<select v-model="filters.manufacturer" @change="filterProducts">
-					<option value="">Kies een merk</option>
-					<option v-for="manufacturer in collectManufacturers" :value="manufacturer">{{ manufacturer }}</option>
-				</select>
-			</label>
-			<label>
-				<select v-model="filters.color" @change="filterProducts">
-					<option value="">Kies een kleur</option>
-					<option v-for="color in collectColors" :value="color">{{ color }}</option>
-				</select>
-			</label>
-			<label>
-				<select v-model="filters.has_5g" @change="filterProducts">
-					<option :value="null">5G</option>
-					<option :value="true">Ja</option>
-					<option :value="false">Nee</option>
-				</select>
-			</label>
-			<label>
-				<select v-model="filters.operating_system" @change="filterProducts">
-					<option value="">OS</option>
-					<option value="IOS">iOS</option>
-					<option value="ANDROID">Android</option>
-				</select>
-			</label>
-			<label>
-				<select v-model="filters.has_esim" @change="filterProducts">
-					<option :value="null">E-Sim</option>
-					<option :value="true">Ja</option>
-					<option :value="false">Nee</option>
-				</select>
-			</label>
-			<label>
-				<select v-model="filters.refurbished" @change="filterProducts">
-					<option :value="null">Refurbished</option>
-					<option :value="true">Ja</option>
-					<option :value="false">Nee</option>
-				</select>
-			</label>
+		<div :class="$style['wrapper']">
+			<div :class="$style['filters']">
+				<label>
+					<select v-model="filters.manufacturer" @change="filterProducts">
+						<option value="">Kies een merk</option>
+						<option v-for="manufacturer in collectManufacturers" :value="manufacturer">{{ manufacturer }}</option>
+					</select>
+				</label>
+				<label>
+					<select v-model="filters.color" @change="filterProducts">
+						<option value="">Kies een kleur</option>
+						<option v-for="color in collectColors" :value="color">{{ color }}</option>
+					</select>
+				</label>
+				<label>
+					<select v-model="filters.has_5g" @change="filterProducts">
+						<option :value="null">5G</option>
+						<option :value="true">Ja</option>
+						<option :value="false">Nee</option>
+					</select>
+				</label>
+				<label>
+					<select v-model="filters.operating_system" @change="filterProducts">
+						<option value="">OS</option>
+						<option value="IOS">iOS</option>
+						<option value="ANDROID">Android</option>
+					</select>
+				</label>
+				<label>
+					<select v-model="filters.has_esim" @change="filterProducts">
+						<option :value="null">E-Sim</option>
+						<option :value="true">Ja</option>
+						<option :value="false">Nee</option>
+					</select>
+				</label>
+				<label>
+					<select v-model="filters.refurbished" @change="filterProducts">
+						<option :value="null">Refurbished</option>
+						<option :value="true">Ja</option>
+						<option :value="false">Nee</option>
+					</select>
+				</label>
+			</div>
+			<div>
+				<label>
+					Sorteer op:
+					<select v-model="filters.sort" @change="filterProducts">
+						<option value="sort-order">Meest verkocht</option>
+						<option value="manufacturer">Merk</option>
+					</select>
+				</label>
+			</div>
 		</div>
-		<div>
-			<label>
-				Sorteer op:
-				<select v-model="filters.sort" @change="filterProducts">
-					<option value="sort-order">Meest verkocht</option>
-					<option value="manufacturer">Merk</option>
-				</select>
-			</label>
-		</div>
-		<button :class="$style['reset-button']" @click="resetFilters">Reset filters</button>
+		<button v-if="filtersOpen" :class="$style['reset-button']" @click="resetFilters">Reset filters</button>
 	</form>
 </template>
 
 <style module lang="scss">
 	.filter-and-sort {
-		display: grid;
-		grid-template-columns: 1fr;
-		align-items: end;
 		margin: 1rem 0;
 		padding: 1.5rem 1rem;
 		width: 100%;
 		border-radius: var(--border-radius-medium);
 		background-color: var(--color-kux-background);
+
+		.wrapper {
+			display: grid;
+			grid-template-columns: 1fr;
+			align-items: end;
+		}
 
 		.filters {
 			display: flex;
@@ -157,8 +165,15 @@ import { Product } from '~/types/Product';
 		}
 
 		.reset-button {
+			margin-top: 1rem;
+			padding: 0 0.75rem;
 			background-color: transparent;
 			border: 0;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 
 		select {
@@ -172,7 +187,10 @@ import { Product } from '~/types/Product';
 
 	@media screen and (min-width: 1200px) {
 		.filter-and-sort {
-			grid-template-columns: 3fr 1fr;
+
+			.wrapper {
+				grid-template-columns: 3fr 1fr;
+			}
 			.filters {
 				flex-direction: row;
 			}
