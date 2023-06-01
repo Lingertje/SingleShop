@@ -57,6 +57,9 @@
     --color-kux-table-hover-color: #f3f3f3;
     --color-kux-table-sort-icon: #939393;
     --color-kux-table-sort-icon-sorted: #333;
+	--border-radius-small: 0.25rem;
+	--border-radius-medium: 0.5rem;
+	--border-radius-large: 1rem;
 }
 
 body {
@@ -75,6 +78,7 @@ h1, .h1 {
 .container {
 	width: min(100%, 1200px);
 	margin: 0 auto;
+	padding: 0 1rem;
 }
 
 .reset-list {
