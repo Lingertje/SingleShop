@@ -1,16 +1,16 @@
 <script setup lang="ts">
 	import { ref, computed } from 'vue';
-	import { Product } from '@/types/Product';
+	import { ProductType } from '@/types/Product';
 
 	type ReturnType = {
-		products: Product[];
+		products: ProductType[];
 	}
 
-	const productList = ref<Product[]>([]);
-	const sortedProducts = ref<Product[]>([]);
+	const productList = ref<ProductType[]>([]);
+	const sortedProducts = ref<ProductType[]>([]);
 
 	try {
-		const { data, error } = await useFetch<ReturnType>('http://localhost:3000/products.json');
+		const { data, error } = await useFetch<ReturnType>('/api/products');
 
 		if (error.value?.message) {
 			throw new Error(error.value?.message);
@@ -25,7 +25,7 @@
 
 	const numberOfProducts = computed(() => sortedProducts.value.length);
 
-	function updateSorted(products: Product[]) {
+	function updateSorted(products: ProductType[]) {
 		sortedProducts.value = products;
 	}
 </script>

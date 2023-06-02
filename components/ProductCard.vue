@@ -11,7 +11,7 @@
 	<div :class="$style['card']">
 		<NuxtLink :to="`/mobiel/${product.id}`">
 			<div :class="$style['image-container']">
-				<img src="https://placehold.co/160x240" :alt="product.model" />
+				<img :src="`https://www.kpn.com/shop/cdn/products/_/product_${product.variants?.[0].id}_main.png`" :alt="product.model" />
 			</div>
 			<div :class="$style['body-container']">
 				<span :class="$style['manufacturer']">{{ product.manufacturer }}</span>
@@ -36,7 +36,6 @@
 		}
 	}
 
-
 	.image-container {
 		width: 100%;
 
@@ -44,6 +43,8 @@
 			display: block;
 			margin: 0 auto;
 			width: 160px;
+			height: 240px;
+			object-fit: contain;
 		}
 	}
 

@@ -1,4 +1,4 @@
-type Variant = {
+type VariantType = {
 	id: number;
 	name: string;
 	slug: string;
@@ -16,7 +16,7 @@ type Variant = {
 	ui_suggested_sort_order: number;
   };
 
-  type Product = {
+  type ProductType = {
 	id: number;
 	name: string;
 	slug: string;
@@ -32,7 +32,7 @@ type Variant = {
 	sort_order: number;
 	release_date: string;
 	default: string;
-	variants: Variant[];
+	variants: VariantType[];
 	attributes: {
 	  promotion_label: string;
 	  promotion_slider_source: string;
@@ -41,4 +41,44 @@ type Variant = {
 	has_promotion: boolean;
   };
 
-  export type { Product, Variant };
+  type FilterType = {
+	manufacturer: string;
+	color: string;
+	has_5g: boolean | null;
+	operating_system: string;
+	has_esim: boolean | null;
+	refurbished: boolean | null;
+	sort: string;
+  };
+
+  const Colors = {
+	'BLAUW': 'Marine Blauw',
+	"CREME": "Creme",
+	"DARK PEARL": "Dark Pearl",
+	"ELECTRIC GRAPHITE": "Electric Graphite",
+	"GEEL": "Geel",
+	"GOUD": "Goud",
+	"GRAFIET": "Grafiet",
+	"GRIJS": "Grijs",
+	"GROEN": "Leger Groen",
+	"MAGIC BLUE": "Magic Blue",
+	"MINT": "Mint",
+	"PAARS": "Paars",
+	"ROOD": "Rood",
+	"ROZE": "Roze",
+	"VIOLET": "Violet",
+	"WIT": "Wit",
+	"ZILVER": "Zilver",
+	"ZWART": "Zwart"
+}
+
+const OS = {
+	"ANDROID": "Android",
+	"IOS": "iOS"
+}
+
+const colorMap = new Map(Object.entries(Colors));
+const osMap = new Map(Object.entries(OS));
+
+  export type { ProductType, VariantType, FilterType };
+  export { colorMap, osMap };

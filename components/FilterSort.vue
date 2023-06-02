@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { Product } from '~/types/Product';
+import { ProductType, FilterType, colorMap, osMap  } from '~/types/Product';
 
 	const props = defineProps({
 		products: {
-			type: Array<Product>,
+			type: Array<ProductType>,
 			required: true
 		}
 	})
 
 	const emit = defineEmits(['sort', 'filter']);
-	const filters = ref({
+	// Add type for filters
+	const filters = ref<FilterType>({
 		manufacturer: '',
 		color: '',
 		has_5g: null,
@@ -21,13 +22,13 @@ import { Product } from '~/types/Product';
 	const filtersOpen = ref(false);
 
 	const collectManufacturers = computed(() => {
-		const manufacturers = new Set<String>(props.products.map(product => product.manufacturer));
+		const manufacturers = new Set<string>(props.products.map(product => product.manufacturer));
 
 		return [...manufacturers].sort();
 	});
 
 	const collectColors = computed(() => {
-		const colors = new Set<String>();
+		const colors = new Set<any>();
 
 		props.products.forEach(product => {
 			product.colors.forEach(color => {
@@ -36,6 +37,12 @@ import { Product } from '~/types/Product';
 		})
 
 		return [...colors].sort();
+	});
+
+	const collectOperatingSystems = computed(() => {
+		const operatingSystems = new Set<string>(props.products.map(product => product.operating_system));
+
+		return [...operatingSystems].sort();
 	});
 
 	function filterProducts() {
@@ -61,7 +68,7 @@ import { Product } from '~/types/Product';
 		return emit('filter', sortProducts(filteredArray));
 	}
 
-	function sortProducts(products: Product[]) {
+	function sortProducts(products: ProductType[]) {
 		if (filters.value.sort === 'manufacturer') {
 			return products.sort((a, b) => a.manufacturer > b.manufacturer ? 1 : -1);
 		}
@@ -98,7 +105,7 @@ import { Product } from '~/types/Product';
 				<label>
 					<select v-model="filters.color" @change="filterProducts">
 						<option value="">Kies een kleur</option>
-						<option v-for="color in collectColors" :value="color">{{ color }}</option>
+						<option v-for="color in collectColors" :value="color">{{ colorMap.get(color) }}</option>
 					</select>
 				</label>
 				<label>
@@ -111,8 +118,7 @@ import { Product } from '~/types/Product';
 				<label>
 					<select v-model="filters.operating_system" @change="filterProducts">
 						<option value="">OS</option>
-						<option value="IOS">iOS</option>
-						<option value="ANDROID">Android</option>
+						<option v-for="operatingSystem in collectOperatingSystems" :value="operatingSystem">{{ osMap.get(operatingSystem) }}</option>
 					</select>
 				</label>
 				<label>
@@ -130,7 +136,7 @@ import { Product } from '~/types/Product';
 					</select>
 				</label>
 			</div>
-			<div>
+			<div :class="$style['sort']">
 				<label>
 					Sorteer op:
 					<select v-model="filters.sort" @change="filterProducts">
@@ -164,6 +170,10 @@ import { Product } from '~/types/Product';
 			gap: 1rem;
 		}
 
+		.sort {
+			margin-top: 2rem;
+		}
+
 		.reset-button {
 			margin-top: 1rem;
 			padding: 0 0.75rem;
@@ -193,6 +203,11 @@ import { Product } from '~/types/Product';
 			}
 			.filters {
 				flex-direction: row;
+			}
+
+			.sort {
+				margin-top: 0;
+				text-align: right;
 			}
 
 			select {
