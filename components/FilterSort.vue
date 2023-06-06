@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ProductType, FilterType, colorMap, osMap  } from '~/types/Product';
+import {useFilterStore} from '~/stores/FilterStore';
 
 	const props = defineProps({
 		products: {
@@ -8,18 +9,23 @@ import { ProductType, FilterType, colorMap, osMap  } from '~/types/Product';
 		}
 	})
 
-	const emit = defineEmits(['sort', 'filter']);
-	// Add type for filters
-	const filters = ref<FilterType>({
-		manufacturer: '',
-		color: '',
-		has_5g: null,
-		operating_system: '',
-		has_esim: null,
-		refurbished: null,
-		sort: 'sort-order'
+	const emit = defineEmits(['filter']);
+	const store = useFilterStore();
+
+	const filters = computed((): FilterType => {
+		return {
+			manufacturer: store.filters.manufacturer ?? '',
+			color: store.filters.color ?? '',
+			operating_system: store.filters.operating_system ?? '',
+			has_5g: store.filters.has_5g ?? '',
+			has_esim: store.filters.has_esim ?? '',
+			refurbished: store.filters.refurbished ?? '',
+			sort: store.filters.sort ?? 'sort-order'
+		}
 	});
-	const filtersOpen = ref(false);
+
+	store.$subscribe(filterProducts);
+
 
 	const collectManufacturers = computed(() => {
 		const manufacturers = new Set<string>(props.products.map(product => product.manufacturer));
@@ -46,30 +52,29 @@ import { ProductType, FilterType, colorMap, osMap  } from '~/types/Product';
 	});
 
 	function filterProducts() {
-		const filterKeys = Object.keys(filters.value);
+		const filterKeys = Object.keys(store.filters);
 
 		const filteredArray = props.products.filter(product => {
 			return filterKeys.every(key => {
 				// @ts-ignore
-				if (filters.value[key] === '' || filters.value[key] === null || key === 'sort') {
+				if (store.filters[key] === '' || store.filters[key] === null || key === 'sort') {
 					return true;
 				}
 
 				if (key === 'color') {
-					return product.colors.includes(filters.value.color);
+					return product.colors.includes(store.filters.color);
 				}
 
 				// @ts-ignore
-				return product[key] === filters.value[key];
+				return product[key].toString() === store.filters[key];
 			})
 		})
 
-		filtersOpen.value = true;
 		return emit('filter', sortProducts(filteredArray));
 	}
 
 	function sortProducts(products: ProductType[]) {
-		if (filters.value.sort === 'manufacturer') {
+		if (store.filters.sort === 'manufacturer') {
 			return products.sort((a, b) => a.manufacturer > b.manufacturer ? 1 : -1);
 		}
 
@@ -77,18 +82,7 @@ import { ProductType, FilterType, colorMap, osMap  } from '~/types/Product';
 	}
 
 	function resetFilters() {
-		filters.value = {
-			manufacturer: '',
-			color: '',
-			has_5g: null,
-			operating_system: '',
-			has_esim: null,
-			refurbished: null,
-			sort: 'sort-order'
-		}
-
-		filterProducts();
-		filtersOpen.value = false;
+		store.$reset();
 	}
 </script>
 
@@ -97,40 +91,40 @@ import { ProductType, FilterType, colorMap, osMap  } from '~/types/Product';
 		<div :class="$style['wrapper']">
 			<div :class="$style['filters']">
 				<label>
-					<select v-model="filters.manufacturer" @change="filterProducts">
+					<select v-model="filters.manufacturer" @change="(e: Event) => store.add({'manufacturer': (e?.currentTarget as HTMLSelectElement)?.value})">
 						<option value="">Kies een merk</option>
 						<option v-for="manufacturer in collectManufacturers" :value="manufacturer">{{ manufacturer }}</option>
 					</select>
 				</label>
 				<label>
-					<select v-model="filters.color" @change="filterProducts">
+					<select v-model="filters.color" @change="(e: Event) => store.add({'color': (e?.currentTarget as HTMLSelectElement)?.value})">
 						<option value="">Kies een kleur</option>
 						<option v-for="color in collectColors" :value="color">{{ colorMap.get(color) }}</option>
 					</select>
 				</label>
 				<label>
-					<select v-model="filters.has_5g" @change="filterProducts">
-						<option :value="null">5G</option>
+					<select v-model="filters.has_5g" @change="(e: Event) => store.add({'has_5g': (e?.currentTarget as HTMLSelectElement)?.value})">
+						<option value="">5G</option>
 						<option :value="true">Ja</option>
 						<option :value="false">Nee</option>
 					</select>
 				</label>
 				<label>
-					<select v-model="filters.operating_system" @change="filterProducts">
+					<select v-model="filters.operating_system" @change="(e: Event) => store.add({'operating_system': (e?.currentTarget as HTMLSelectElement)?.value})">
 						<option value="">OS</option>
 						<option v-for="operatingSystem in collectOperatingSystems" :value="operatingSystem">{{ osMap.get(operatingSystem) }}</option>
 					</select>
 				</label>
 				<label>
-					<select v-model="filters.has_esim" @change="filterProducts">
-						<option :value="null">E-Sim</option>
+					<select v-model="filters.has_esim" @change="(e: Event) => store.add({'has_esim': (e?.currentTarget as HTMLSelectElement)?.value})">
+						<option value="">E-Sim</option>
 						<option :value="true">Ja</option>
 						<option :value="false">Nee</option>
 					</select>
 				</label>
 				<label>
-					<select v-model="filters.refurbished" @change="filterProducts">
-						<option :value="null">Refurbished</option>
+					<select v-model="filters.refurbished" @change="(e: Event) => store.add({'refurbished': (e?.currentTarget as HTMLSelectElement)?.value})">
+						<option value="">Refurbished</option>
 						<option :value="true">Ja</option>
 						<option :value="false">Nee</option>
 					</select>
@@ -139,14 +133,14 @@ import { ProductType, FilterType, colorMap, osMap  } from '~/types/Product';
 			<div :class="$style['sort']">
 				<label>
 					Sorteer op:
-					<select v-model="filters.sort" @change="filterProducts">
+					<select v-model="filters.sort" @change="(e: Event) => store.add({'sort': (e?.currentTarget as HTMLSelectElement)?.value})">
 						<option value="sort-order">Meest verkocht</option>
 						<option value="manufacturer">Merk</option>
 					</select>
 				</label>
 			</div>
 		</div>
-		<button v-if="filtersOpen" :class="$style['reset-button']" @click="resetFilters">Reset filters</button>
+		<button v-if="Object.keys(store.filters).length" :class="$style['reset-button']" @click="resetFilters">Reset filters</button>
 	</form>
 </template>
 

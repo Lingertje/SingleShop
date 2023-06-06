@@ -44,10 +44,10 @@ type VariantType = {
   type FilterType = {
 	manufacturer: string;
 	color: string;
-	has_5g: boolean | null;
+	has_5g: boolean | '';
 	operating_system: string;
-	has_esim: boolean | null;
-	refurbished: boolean | null;
+	has_esim: boolean | '';
+	refurbished: boolean | '';
 	sort: string;
   };
 

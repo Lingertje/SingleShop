@@ -33,7 +33,7 @@
 <template>
 	<div class="container">
 		<h1><span style="font-weight: 300;">Kies uit maar liefst</span> <span :class="$style['gradient-text']">{{ numberOfProducts }} telefoons</span></h1>
-		<FilterSort :products="productList" @sort="updateSorted" @filter="updateSorted" />
+		<FilterSort :products="productList" @filter="updateSorted" />
 		<div v-if="productList" :class="$style['product-list']">
 			<ProductCard v-for="product in sortedProducts" :key="product.id" :product="product" />
 			<h2 v-if="!sortedProducts.length" style="grid-column: span 3;">Er zijn geen producten gevonden die voldoen aan de filters.</h2>
