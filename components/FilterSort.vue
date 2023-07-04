@@ -26,11 +26,17 @@ import {useFilterStore} from '~/stores/FilterStore';
 
 	store.$subscribe(filterProducts);
 
+	function collectOption(key: any) {
+		// @ts-ignore
+		return [...new Set<string>(props.products.map(product => product[key]))].sort();
+	}
 
 	const collectManufacturers = computed(() => {
-		const manufacturers = new Set<string>(props.products.map(product => product.manufacturer));
+		return collectOption('manufacturer');
+	});
 
-		return [...manufacturers].sort();
+	const collectOperatingSystems = computed(() => {
+		return collectOption('operating_system');
 	});
 
 	const collectColors = computed(() => {
@@ -43,12 +49,6 @@ import {useFilterStore} from '~/stores/FilterStore';
 		})
 
 		return [...colors].sort();
-	});
-
-	const collectOperatingSystems = computed(() => {
-		const operatingSystems = new Set<string>(props.products.map(product => product.operating_system));
-
-		return [...operatingSystems].sort();
 	});
 
 	function filterProducts() {
